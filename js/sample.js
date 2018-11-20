@@ -19,7 +19,7 @@ dropdown2.append('<option selected="true" disabled>Choose Municipality</option>'
 dropdown2.prop('selectedIndex', 0);
 
 /*** Select the content of the provinces and municipalities**/
-const url = 'https://raw.githubusercontent.com/darklight721/philippines/master/provinces.json';
+const url = 'https://raw.githubusercontent.com/ArielDoria/Weather-Forecast/master/jsondata/municipalities.json';
 const url2 = 'https://raw.githubusercontent.com/darklight721/philippines/master/cities.json';
 
 // Populate dropdown with list of provinces
@@ -45,6 +45,8 @@ dropdown.change(function(){
 //change the graph when selected
 dropdown2.change(function(){
 		var api = 'https://api.openweathermap.org/data/2.5/forecast?q='+dropdown2.val()+',ph&mode=json&APPID=ea854b50261a6a6ef8fcbdd29db4ccab';
+		$("#index-banner").hide('slow');			//remove the starter and footer template
+		//$("#foot-info").hide('slow')
 		$.getJSON(api, function (data) {
 			//extract data from the JSON file 
 			var city = data.city.name;
@@ -69,6 +71,7 @@ dropdown2.change(function(){
 					rainfall.push(0);
 				}
 			}
+			addCardLayout();
 			asignTable(data.list[2]);
 			asignGraph(city,categories,rainfall,temperature);	//call the function for graph
 
@@ -94,6 +97,13 @@ dropdown2.change(function(){
 				}
 			}
 			asign5DayGraph(city,categories2,rainfall2,temperature2);
+			asignTitle(city);
+			asignhourly(city,data);
+
+			//make sure that the oage of main is displayed
+			$('#container-graph').show();
+			$('#5day-graph').hide();
+			$('#hourly-table').hide();
 		});
 
 		function asignGraph(city,categories,rainfall,temp){
@@ -132,13 +142,13 @@ dropdown2.change(function(){
 			        title: {
 			            text: 'Rainfall',
 			            style: {
-			                color: Highcharts.getOptions().colors[0]
+			                color: '#0d47a1'
 			            }
 			        },
 			        labels: {
 			            format: '{value} mm',
 			            style: {
-			                color: Highcharts.getOptions().colors[0]
+			                color: '#0d47a1'
 			            }
 			        },
 			        opposite: true
@@ -211,13 +221,13 @@ dropdown2.change(function(){
 			        title: {
 			            text: 'Rainfall',
 			            style: {
-			                color: Highcharts.getOptions().colors[0]
+			                color: '#0d47a1'
 			            }
 			        },
 			        labels: {
 			            format: '{value} mm',
 			            style: {
-			                color: Highcharts.getOptions().colors[0]
+			                color: '#0d47a1'
 			            }
 			        },
 			        opposite: true
@@ -254,6 +264,35 @@ dropdown2.change(function(){
 			});
 	});
 }
+	
+	function addCardLayout(){
+
+		var g = $('#cardlayout');
+		g.empty();		//empty for the new data
+		g.append("<div class='card-tabs'><ul class='tabs tabs-fixed-width'><li class='tab' id='cont-tab' ><a href='#container-graph' style='color:#1565c0'>Main</a></li><li class='tab' id='5day-tab' ><a href='#5day-graph' style='color:#1565c0'>5-Day Forecast</a></li><li class='tab' id='hourly-tab' ><a href='#hourly-table' style='color:#1565c0'>Hourly Forecast</a></li></ul></div>");
+		g.append("<div class='card-content'><div id='container-graph' >  </div><!-- for the main graph --><div id='5day-graph' style='display:none'>  </div><div id='hourly-table' style='display:none'><div id='title-daily'></div><div id='tab-hour'><table id='hourly'></table></div></div></div>");
+		
+		//toggling the card layout for 5-day forecast
+		$("#5day-tab").click(function () {
+			 $('#5day-graph').show();
+			 $('#container-graph').hide();
+			 $('#hourly-table').hide();
+		});
+
+		//toggling the card layout for main
+		$("#cont-tab").click(function () {
+			 $('#5day-graph').hide();
+			 $('#container-graph').show();
+			 $('#hourly-table').hide();
+		});
+
+		//toggling for card layout for hourly forecast
+		$("#hourly-tab").click(function () {
+			 $('#5day-graph').hide();
+			 $('#container-graph').hide();
+			 $('#hourly-table').show();
+		});
+	}
 
 	function asignTable(list){
 		//assigning general weather
@@ -261,7 +300,7 @@ dropdown2.change(function(){
 		gen.empty();
 		var iconcode = list.weather[0].icon
 		var iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
-		gen.append($('<img>').attr('src', iconurl))
+		gen.append($("<img id='weather-icon'>").attr('src', iconurl))
 		gen.append("<h4>   "+(list.main.temp-273.15).toFixed(2)+"°C</h4>");
 		gen.append("<b>"+list.weather[0].description+"</b>");
 
@@ -269,27 +308,52 @@ dropdown2.change(function(){
 		var tab = $('#weather-table');
 		tab.empty();
 		var tr = $("<tbody>");
-		tr.append("<tr><td>"+"Wind"+"</td><td>"+list.wind.speed+" m/sec</td></tr>");
+		tr.append("<tr style='background-color:#bbdefb'><td>"+"Wind"+"</td><td>"+list.wind.speed+" m/sec</td></tr>");
 		tr.append("<tr><td>"+"Cloudiness"+"</td><td>"+list.clouds.all+" %</td></tr>");
-		tr.append("<tr><td>"+"Pressure"+"</td><td>"+list.main.pressure+" hPa</td></tr>");
+		tr.append("<tr style='background-color:#bbdefb'><td>"+"Pressure"+"</td><td>"+list.main.pressure+" hPa</td></tr>");
 		tr.append("<tr><td>"+"Humidity"+"</td><td>"+list.main.humidity+" %</td></tr>");
-		tr.append("<tr><td>"+"Min Temperature"+"</td><td>"+(list.main.temp_min-273.15).toFixed(2)+"°C</td></tr>");
-		tr.append("<tr><td>"+"Max Temperature"+"</td><td>"+(list.main.temp_max-273.15).toFixed(2)+"°C</td></tr>");
+		tr.append("<tr style='background-color:#bbdefb'><td>"+"Min Temperature"+"</td><td>"+(list.main.temp_min-273.15).toFixed(2)+" °C</td></tr>");
+		tr.append("<tr><td>"+"Max Temperature"+"</td><td>"+(list.main.temp_max-273.15).toFixed(2)+" °C</td></tr>");
 
 		tr.append("</tbody>")
 		tab.append(tr)
+		$('#weather-icon').width('10vh');		//change the size of the icon for the weather
 	}
 
 });
+		function asignTitle(city){	//assign a title for hourly data
+			var div1 = $('#title-daily');
+			div1.empty();
+			var samp = $("<h5 class='center bold'>Weather Forecast in "+city+","+$("#provinces-dropdown option:selected").text()+"</h5>");
+			div1.append(samp);
+		}
 
-//toggling the card layout for 5-day forecast
-$("#5day-tab").click(function () {
-	 $('#5day-graph').show();
-	 $('#container-graph').hide();
-});
+		function asignhourly(city,data){
+			const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];		//constants for the value
+			const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday","Saturday"]
+			var hour = $('#hourly');
+			hour.empty();
 
-//toggling the card layout for main
-$("#cont-tab").click(function () {
-	 $('#5day-graph').hide();
-	 $('#container-graph').show();
-});
+			var tr = $("<tbody>");
+			var date = new Date(data.list[0].dt_txt);
+			tr.append("<tr style='background-color: #bbdefb'><td><b>"+dayNames[date.getDay()]+", "+monthNames[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear()+"</b></td><td></td></tr>");
+			
+			for (i=0;i<data.cnt;i++) {
+				
+				if(!(date.getMonth() == (new Date(data.list[i].dt_txt)).getMonth() && date.getDate() == (new Date(data.list[i].dt_txt)).getDate())){
+					date = new Date(data.list[i].dt_txt);						//update the value of date
+					tr.append("<tr style='background-color: #bbdefb'><td><b>"+dayNames[date.getDay()]+", "+monthNames[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear()+"</b></td><td></td></tr>");
+				}
+
+				var iconcode = data.list[i].weather[0].icon 					//get the icon for the weather
+				var iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+				//iconurl.css("height",5)
+				tr.append("<tr class='table-row' ><td >"+data.list[i].dt_txt.split(" ")[1]+"  <img style='height:30px' src="+iconurl +"></td><td>"+(data.list[i].main.temp-273.15).toFixed(2)+" °C / "+data.list[i].weather[0].description+"</td></tr>");
+				//tr.append("<tr class='table-row' ><td>"+data.list[i].dt_txt.split(" ")[1]+"</td><td>"+(data.list[i].main.temp-273.15).toFixed(2)+" °C / "+data.list[i].weather[0].description+"</td></tr>");
+			}
+			tr.append("</tbody>");
+			hour.append(tr);
+			$("#tab-hour").css("height","60vh")
+			$("#tab-hour").css("overflow-y"," scroll");
+
+		}

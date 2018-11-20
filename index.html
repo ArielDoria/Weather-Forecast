@@ -1,3 +1,6 @@
+<!-- Author: Ariel Doria
+    Website Description: Create a weather forecast for the municipalities in the Philippines
+ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,10 +11,12 @@
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/sty.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 </head>
 <body>
-  <nav class="light-blue lighten-1" role="navigation">
-    <div class="nav-wrapper container s12 l3" ><a id="logo-container" href="#" class="brand-logo">Weather Forecast</a>
+  <nav class="#1565c0 blue darken-3" role="navigation">
+    <div class=" container s12 l3" >
+        <a id="logo-container" href="#" class="brand-logo"><i class="large material-icons">wb_sunny</i>Weather Forecast</a>
       <!-- <ul class="right hide-on-med-and-down">
         <li><a href="#">Navbar Link</a></li>
       </ul>
@@ -27,28 +32,40 @@
   <!--- selection of places-->
    <div class="container">
       <div class="row">
-        <div class="col s6">
-          <label>Province</label>
+        <div class="center"><br>Know the 5-day weather forecast in municipalities around the Phlippines.</div>
+         <div class="center grey-text">Powered by Open Weather Map <br><br></div>
+       
+        <div class=" center col s4 offset-s2">
+          <label class ="center black-text">Province</label>
            <div class="input-field">
               <select class="browser-default" id="provinces-dropdown" name="provinces">
                 
               </select>
             </div>
           </div>
-          <div class="col s6">
-          <label>Municipality</label>
+          <div class="center col s4">
+          <label class ="center black-text" >Municipality</label>
            <div class="input-field">
               <select class="browser-default" id="cities-dropdown" name="cities">
                 
               </select>
             </div>
           </div>
-          </row>
+        </div>
     </div>
+  </div>
+
+<!--Starter Page-->
+  <div class="section" id="index-banner">
+      <h1 class="header center blue-text text-darken-3">Philippines' Weather Forecast</h1>
+      <div class="row center">
+        <h5 class="header col s12 light"><a class="black-text" href="https://openweathermap.org/">Powered by Open Weather Map</a></h5><br/>
+        <h1 class="center yellow-text text-darken-3"><i class="medium material-icons">wb_sunny</i></h1>
+      </div>
   </div>
  
  <!-- Weather Chart and Graph-->
- <div class="container">
+ <div class="container" style="position: relative; height: 100%;">
     <div class="row">
       <div id="weather" class="col s12 m12 l3">
        <div id="general-weather" style="padding-right: 10%;"></div>
@@ -58,26 +75,42 @@
       </div>
       <!--card layout for the main and daily-->
         <div class="col l9">
-          <div class="card" style="padding-left: 2%;">
+          <div id="cardlayout" class="card" style="padding-left: 2%;">
 
-            <div class="card-tabs">
+            <!-- <div class="card-tabs">
               <ul class="tabs tabs-fixed-width">
                 <li class="tab" id="cont-tab" ><a href="#container-graph" style="color:#1e88e5">Main</a></li>
                 <li class="tab" id="5day-tab" ><a href="#5day-graph" style="color:#1e88e5">5-Day Forecast</a></li>
+                <li class="tab" id="hourly-tab" ><a href="#hourly-table" style="color:#1e88e5">Hourly Forecast</a></li>
               </ul>
             </div>
 
             <div class="card-content">
-                <div id="container-graph" >  </div><!-- for the main graph -->
+                <div id="container-graph" >  </div>< for the main graph
                 <div id="5day-graph" style="display:none">  </div>
-            </div>
+                <div id="hourly-table" style="display:none">
+                    <table id="hourly" ></table> 
+                </div>
+            </div> -->
 
           </div>
         </div>
   </div>
   </div>
- 
-
+  
+<!-- FOOTER -->
+<div class="blue darken-4" id='foot'>
+   <footer class="page-footer #0d47a1 blue darken-4" id="foot-info">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">About</h5>
+          <p class="grey-text text-lighten-4">This web applications aims to gather information from <a class="white-text" href="https://openweathermap.org/">Open Weather Map</a> and localize it in municipalities in the Phiippines. It will help the Filipino to schedule their plans specifically, the cropping activities.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
   <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
   <script src="js/materialize.js"></script>
   <script src="js/sample.js"></script>
