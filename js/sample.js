@@ -5,7 +5,7 @@
 */
 
 /***** GEt the current Location *****/
-var city, province;
+/*var city, province;
 var geocoder;
 
 if (navigator.geolocation) {
@@ -66,7 +66,7 @@ function codeLatLng(lat, lng) {
 
 function initialize() {
   geocoder = new google.maps.Geocoder();
-}
+}*/
 
 
 /*** Initializing the Dropdown in Select ****/
