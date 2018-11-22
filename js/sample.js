@@ -4,6 +4,71 @@
 	Date: November 2018
 */
 
+/***** GEt the current Location *****/
+var city, province;
+var geocoder;
+
+if (navigator.geolocation) {
+   navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
+}
+
+//Get the latitude and the longitude;
+function successFunction(position) {
+  var lat = position.coords.latitude;
+  var lng = position.coords.longitude;
+  codeLatLng(lat, lng);
+}
+
+function errorFunction() {
+  console.log("Geocoder failed");
+}
+
+function codeLatLng(lat, lng) {
+  var latlng = new google.maps.LatLng(lat, lng);
+   geocoder = new google.maps.Geocoder();
+  geocoder.geocode({
+    'latLng': latlng
+  }, function(results, status) {
+   if (status == google.maps.GeocoderStatus.OK) {
+     if (results[1]) {
+    //find country name
+     for (var i = 0; i < results[0].address_components.length; i++) {
+       for (var b = 0; b < results[0].address_components[i].types.length; b++) {
+        //there are different types that might hold a city admin_area_lvl_1 usually does in come cases looking for sublocality type will be more appropriate
+        if (results[0].address_components[i].types[b] == "locality") {
+          //this is the object you are looking for
+          city = results[0].address_components[i];
+          break;
+        }
+      }
+    }
+
+    for (var i = 0; i < results[0].address_components.length; i++) {
+      for (var b = 0; b < results[0].address_components[i].types.length; b++) {
+        //there are different types that might hold a city admin_area_lvl_1 usually does in come cases looking for sublocality type will be more appropriate
+        if (results[0].address_components[i].types[b] == "administrative_area_level_2") {
+          //this is the object you are looking for
+          province = results[0].address_components[i];
+          break;
+        }
+      }
+    }
+    console.log(city.long_name +", "+ province.long_name);
+    selected_location(city.long_name, province.long_name)
+   } else {
+     console.log("City name not available");
+    }
+   } else {
+     console.log("Geocoder failed due to: ", status);
+   }
+  });
+}
+
+function initialize() {
+  geocoder = new google.maps.Geocoder();
+}
+
+
 /*** Initializing the Dropdown in Select ****/
 var dropdown = $('#provinces-dropdown');
 var dropdown2 = $('#cities-dropdown');
@@ -42,9 +107,12 @@ dropdown.change(function(){
 	});
 });
 
+dropdown2.change(function(location){
+	selected_location(dropdown2.val(),$("#provinces-dropdown option:selected").text());
+});
 //change the graph when selected
-dropdown2.change(function(){
-		var api = 'https://api.openweathermap.org/data/2.5/forecast?q='+dropdown2.val()+',ph&mode=json&APPID=ea854b50261a6a6ef8fcbdd29db4ccab';
+function selected_location(city,province){
+		var api = 'https://api.openweathermap.org/data/2.5/forecast?q='+city+',ph&mode=json&APPID=ea854b50261a6a6ef8fcbdd29db4ccab';
 		$("#index-banner").hide('slow');			//remove the starter and footer template
 		//$("#foot-info").hide('slow')
 		$.getJSON(api, function (data) {
@@ -73,7 +141,7 @@ dropdown2.change(function(){
 			}
 			addCardLayout();
 			asignTable(data.list[2]);
-			asignGraph(city,categories,rainfall,temperature);	//call the function for graph
+			asignGraph(city,province,categories,rainfall,temperature);	//call the function for graph
 
 			var categories2 = new Array();
 			var rainfall2 = new Array();
@@ -96,7 +164,7 @@ dropdown2.change(function(){
 					rainfall2.push(0);
 				}
 			}
-			asign5DayGraph(city,categories2,rainfall2,temperature2);
+			asign5DayGraph(city,province,categories2,rainfall2,temperature2);
 			asignTitle(city);
 			asignhourly(city,data);
 
@@ -105,8 +173,8 @@ dropdown2.change(function(){
 			$('#5day-graph').hide();
 			$('#hourly-table').hide();
 		});
-
-		function asignGraph(city,categories,rainfall,temp){
+}
+		function asignGraph(city,province,categories,rainfall,temp){
 		$(function () {
 		    var myChart = Highcharts.chart('container-graph', {
 		    	
@@ -114,7 +182,7 @@ dropdown2.change(function(){
 			        zoomType: 'xy'
 			    },
 			    title: {
-			        text: 'Weather and Forecasts in '+ city + ', ' + $("#provinces-dropdown option:selected").text()
+			        text: 'Weather and Forecasts in '+ city + ', ' + province
 			    },
 			    subtitle: {
 			        text: 'Source: openweathermap.org'
@@ -185,7 +253,7 @@ dropdown2.change(function(){
 			});
 	});
 }
-		function asign5DayGraph(city,categories,rainfall,temp){
+		function asign5DayGraph(city,province,categories,rainfall,temp){
 		$(function () {
 		    var myChart = Highcharts.chart('5day-graph', {
 		    	
@@ -193,7 +261,7 @@ dropdown2.change(function(){
 			        zoomType: 'xy'
 			    },
 			    title: {
-			        text: 'Weather and Forecasts in '+ city + ', ' + $("#provinces-dropdown option:selected").text()
+			        text: 'Weather and Forecasts in '+ city + ', ' + province
 			    },
 			    subtitle: {
 			        text: 'Source: openweathermap.org'
@@ -320,7 +388,7 @@ dropdown2.change(function(){
 		$('#weather-icon').width('10vh');		//change the size of the icon for the weather
 	}
 
-});
+
 		function asignTitle(city){	//assign a title for hourly data
 			var div1 = $('#title-daily');
 			div1.empty();
