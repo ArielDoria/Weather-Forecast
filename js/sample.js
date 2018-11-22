@@ -5,68 +5,6 @@
 */
 
 /***** GEt the current Location *****/
-/*var city, province;
-var geocoder;
-
-if (navigator.geolocation) {
-   navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
-}
-
-//Get the latitude and the longitude;
-function successFunction(position) {
-  var lat = position.coords.latitude;
-  var lng = position.coords.longitude;
-  codeLatLng(lat, lng);
-}
-
-function errorFunction() {
-  console.log("Geocoder failed");
-}
-
-function codeLatLng(lat, lng) {
-  var latlng = new google.maps.LatLng(lat, lng);
-   geocoder = new google.maps.Geocoder();
-  geocoder.geocode({
-    'latLng': latlng
-  }, function(results, status) {
-   if (status == google.maps.GeocoderStatus.OK) {
-     if (results[1]) {
-    //find country name
-     for (var i = 0; i < results[0].address_components.length; i++) {
-       for (var b = 0; b < results[0].address_components[i].types.length; b++) {
-        //there are different types that might hold a city admin_area_lvl_1 usually does in come cases looking for sublocality type will be more appropriate
-        if (results[0].address_components[i].types[b] == "locality") {
-          //this is the object you are looking for
-          city = results[0].address_components[i];
-          break;
-        }
-      }
-    }
-
-    for (var i = 0; i < results[0].address_components.length; i++) {
-      for (var b = 0; b < results[0].address_components[i].types.length; b++) {
-        //there are different types that might hold a city admin_area_lvl_1 usually does in come cases looking for sublocality type will be more appropriate
-        if (results[0].address_components[i].types[b] == "administrative_area_level_2") {
-          //this is the object you are looking for
-          province = results[0].address_components[i];
-          break;
-        }
-      }
-    }
-    console.log(city.long_name +", "+ province.long_name);
-    selected_location(city.long_name, province.long_name)
-   } else {
-     console.log("City name not available");
-    }
-   } else {
-     console.log("Geocoder failed due to: ", status);
-   }
-  });
-}
-
-function initialize() {
-  geocoder = new google.maps.Geocoder();
-}*/
 
 
 /*** Initializing the Dropdown in Select ****/
