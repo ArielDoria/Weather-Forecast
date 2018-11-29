@@ -402,7 +402,7 @@ function selected_location(city,province){
 				}
 
 				var iconcode = data.list[i].weather[0].icon 					//get the icon for the weather
-				var iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+				var iconurl = "https://openweathermap.org/img/w/" + iconcode + ".png";
 				//iconurl.css("height",5)
 				tr.append("<tr class='table-row' ><td >"+data.list[i].dt_txt.split(" ")[1]+"  <img style='height:30px' src="+iconurl +"></td><td>"+(data.list[i].main.temp-273.15).toFixed(2)+" °C / "+data.list[i].weather[0].description+"</td></tr>");
 				//tr.append("<tr class='table-row' ><td>"+data.list[i].dt_txt.split(" ")[1]+"</td><td>"+(data.list[i].main.temp-273.15).toFixed(2)+" °C / "+data.list[i].weather[0].description+"</td></tr>");
