@@ -59,13 +59,28 @@ function selected_location(city,province){
 			var categories = new Array();
 			var rainfall = new Array();
 			var temperature = new Array();
-			console.log(data);
+			var mintemp = new Array();
+			var maxtemp = new Array();
+			//console.log(data);
+			var date = " ";
 			for (i=2;i<10;i++) {
-				categories.push(data.list[i].dt_txt.split(" ")[1]);						//push the hours
+				if(date!= data.list[i].dt_txt.split(" ")[0]){							//push the hours
+					categories.push([data.list[i].dt_txt.split(" ")[0],convert_time(data.list[i].dt_txt.split(" ")[1])]);
+					date=data.list[i].dt_txt.split(" ")[0];
+				}
+				else{categories.push(convert_time(data.list[i].dt_txt.split(" ")[1]))}
 				var value = (data.list[i].main.temp - 273.15);							//convert kelvin to degree celcius
 				var temp = parseFloat(value).toFixed(2);									//format the temperature with two decimal places
 				temperature.push(Number(temp));
 				
+				var value_min = (data.list[i].main.temp_min - 273.15);					//getthe minimum and maximum temperature for the day
+				var temp2 = parseFloat(value_min).toFixed(2);	
+				mintemp.push(Number(temp2));
+				
+				var value_max = (data.list[i].main.temp_max - 273.15);
+				var temp3 = parseFloat(value_max).toFixed(2);	
+				maxtemp.push(Number(temp3));
+
 				if(typeof (data.list[i].rain) !== 'undefined' ){				//check if rain value is undefined
 					if(data.list[i].rain['3h']!== undefined){
 						rainfall.push(data.list[i].rain['3h']);
@@ -76,10 +91,12 @@ function selected_location(city,province){
 				else{
 					rainfall.push(0);
 				}
+
 			}
+
 			addCardLayout();
 			asignTable(data.list[2]);
-			asignGraph(city,province,categories,rainfall,temperature);	//call the function for graph
+			asignGraph(city,province,categories,rainfall,temperature,mintemp,maxtemp);	//call the function for graph
 
 			var categories2 = new Array();
 			var rainfall2 = new Array();
@@ -106,13 +123,21 @@ function selected_location(city,province){
 			asignTitle(city);
 			asignhourly(city,data);
 
-			//make sure that the oage of main is displayed
+			//make sure that the page of main is displayed
 			$('#container-graph').show();
 			$('#5day-graph').hide();
 			$('#hourly-table').hide();
+			$('#Main_Label').css("color",'#1565c0');
 		});
 }
-		function asignGraph(city,province,categories,rainfall,temp){
+		
+		function convert_time(timeString){
+			var H = +timeString.substr(0, 2);
+			var h = H % 12 || 12;
+			var ampm = (H < 12 || H === 24) ? "AM" : "PM";
+			return timeString = h + timeString.substr(2, 3) + ampm;
+		}
+		function asignGraph(city,province,categories,rainfall,temp,min,max){
 		$(function () {
 		    var myChart = Highcharts.chart('container-graph', {
 		    	
@@ -165,9 +190,9 @@ function selected_location(city,province){
 			    legend: {
 			        layout: 'vertical',
 			        align: 'left',
-			        x: 120,
+			        x: 110,
 			        verticalAlign: 'top',
-			        y: 70,
+			        y: 40,
 			        floating: true,
 			        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || 'rgba(255,255,255,0.25)'
 			    },
@@ -181,6 +206,22 @@ function selected_location(city,province){
 			        }
 
 			    }, {
+			        name: 'Maximum Temperature',
+			        type: 'spline',
+			        data: max,
+			        tooltip: {
+			            valueSuffix: '°C'
+			        }
+			    },
+			    {
+			        name: 'Minimum Temperature',
+			        type: 'spline',
+			        data: min,
+			        tooltip: {
+			            valueSuffix: '°C'
+			        }
+			    },
+			    {
 			        name: 'Temperature',
 			        type: 'spline',
 			        data: temp,
@@ -275,7 +316,7 @@ function selected_location(city,province){
 
 		var g = $('#cardlayout');
 		g.empty();		//empty for the new data
-		g.append("<div class='card-tabs'><ul class='tabs tabs-fixed-width'><li class='tab' id='cont-tab' ><a href='#container-graph' style='color:#1565c0'>Main</a></li><li class='tab' id='5day-tab' ><a href='#5day-graph' style='color:#1565c0'>5-Day Forecast</a></li><li class='tab' id='hourly-tab' ><a href='#hourly-table' style='color:#1565c0'>Hourly Forecast</a></li></ul></div>");
+		g.append("<div class='card-tabs'><ul class='tabs tabs-fixed-width'><li class='tab' id='cont-tab' ><a href='#container-graph' style='color:#1565c0' id='Main_Label'>Main</a></li><li class='tab' id='5day-tab' ><a href='#5day-graph' style='color:#1565c0' id='5_Label'>5-Day Forecast</a></li><li class='tab' id='hourly-tab' ><a href='#hourly-table' style='color:#1565c0' id='hourly_Label'>Hourly Forecast</a></li></ul></div>");
 		g.append("<div class='card-content'><div id='container-graph' >  </div><!-- for the main graph --><div id='5day-graph' style='display:none'>  </div><div id='hourly-table' style='display:none'><div id='title-daily'></div><div id='tab-hour'><table id='hourly'></table></div></div></div>");
 		
 		//toggling the card layout for 5-day forecast
@@ -283,6 +324,9 @@ function selected_location(city,province){
 			 $('#5day-graph').show();
 			 $('#container-graph').hide();
 			 $('#hourly-table').hide();
+			 $('#5_Label').css("color",'black');
+			 $('#Main_Label').css("color",'#1565c0');
+			 $('#hourly_Label').css("color",'#1565c0');
 		});
 
 		//toggling the card layout for main
@@ -290,6 +334,9 @@ function selected_location(city,province){
 			 $('#5day-graph').hide();
 			 $('#container-graph').show();
 			 $('#hourly-table').hide();
+			 $('#5_Label').css("color",'#1565c0');
+			 $('#Main_Label').css("color",'black');
+			 $('#hourly_Label').css("color",'#1565c0');
 		});
 
 		//toggling for card layout for hourly forecast
@@ -297,6 +344,9 @@ function selected_location(city,province){
 			 $('#5day-graph').hide();
 			 $('#container-graph').hide();
 			 $('#hourly-table').show();
+			 $('#5_Label').css("color",'#1565c0');
+			 $('#Main_Label').css("color",'#1565c0');
+			 $('#hourly_Label').css("color",'black');
 		});
 	}
 
@@ -305,7 +355,7 @@ function selected_location(city,province){
 		var gen = $('#general-weather');
 		gen.empty();
 		var iconcode = list.weather[0].icon
-		var iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+		var iconurl = "https://openweathermap.org/img/w/" + iconcode + ".png";
 		gen.append($("<img id='weather-icon'>").attr('src', iconurl))
 		gen.append("<h4>   "+(list.main.temp-273.15).toFixed(2)+"°C</h4>");
 		gen.append("<b>"+list.weather[0].description+"</b>");
