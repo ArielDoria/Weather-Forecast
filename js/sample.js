@@ -50,6 +50,9 @@ dropdown2.change(function(location){
 });
 //change the graph when selected
 function selected_location(city,province){
+		//put loading circle
+		unload();
+		loading();
 		var api = 'https://api.openweathermap.org/data/2.5/forecast?q='+city+',ph&mode=json&APPID=ea854b50261a6a6ef8fcbdd29db4ccab';
 		$("#index-banner").hide('slow');			//remove the starter and footer template
 		//$("#foot-info").hide('slow')
@@ -97,7 +100,7 @@ function selected_location(city,province){
 			addCardLayout();
 			asignTable(data.list[2]);
 			asignGraph(city,province,categories,rainfall,temperature,mintemp,maxtemp);	//call the function for graph
-
+			unload();
 			var categories2 = new Array();
 			var rainfall2 = new Array();
 			var temperature2 = new Array();
@@ -161,7 +164,8 @@ function selected_location(city,province){
 			            format: '{value}°C',
 			            style: {
 			                color: Highcharts.getOptions().colors[1]
-			            }
+			            },
+
 			        },
 			        title: {
 			            text: 'Temperature',
@@ -312,8 +316,15 @@ function selected_location(city,province){
 	});
 }
 	
-	function addCardLayout(){
+	function loading(){	//add circular spinner
+		var g = $('#cardlayout');
+		g.append("<div class='row'> <div class='col s12'><div class='preloader-wrapper big active' id='loading'><div class='spinner-layer spinner-blue-only'><div class='circle-clipper left'><div class='circle'></div></div><div class='gap-patch'><div class='circle'></div></div><div class='circle-clipper right'><div class='circle'></div></div></div></div></div></div>");
+	}
 
+	function unload(){	//remove circular spinner 
+		$("#loading").hide();
+	}
+	function addCardLayout(){
 		var g = $('#cardlayout');
 		g.empty();		//empty for the new data
 		g.append("<div class='card-tabs'><ul class='tabs tabs-fixed-width'><li class='tab' id='cont-tab' ><a href='#container-graph' style='color:#1565c0' id='Main_Label'>Main</a></li><li class='tab' id='5day-tab' ><a href='#5day-graph' style='color:#1565c0' id='5_Label'>5-Day Forecast</a></li><li class='tab' id='hourly-tab' ><a href='#hourly-table' style='color:#1565c0' id='hourly_Label'>Hourly Forecast</a></li></ul></div>");
@@ -356,27 +367,37 @@ function selected_location(city,province){
 		gen.empty();
 		var iconcode = list.weather[0].icon
 		var iconurl = "https://openweathermap.org/img/w/" + iconcode + ".png";
+		gen.append('<button class="btn blue darken-3 "><i class="small material-icons">date_range</i> '+dateConvert(list.dt_txt.split(" ")[0])+'<br></button><br>');				// put date
 		gen.append($("<img id='weather-icon'>").attr('src', iconurl))
-		gen.append("<h4>   "+(list.main.temp-273.15).toFixed(2)+"°C</h4>");
-		gen.append("<b>"+list.weather[0].description+"</b>");
+		gen.append("<b style='font-size:4vh'>"+(list.main.temp-273.15).toFixed(2)+"°C<b><br>");
+		gen.append("<h6 style='text-align:center'><b>"+list.weather[0].description+"</b></h6>");
 
 		//assigning value in weather table
 		var tab = $('#weather-table');
 		tab.empty();
 		var tr = $("<tbody>");
-		tr.append("<tr style='background-color:#bbdefb'><td>"+"Wind"+"</td><td>"+list.wind.speed+" m/sec</td></tr>");
-		tr.append("<tr><td>"+"Cloudiness"+"</td><td>"+list.clouds.all+" %</td></tr>");
-		tr.append("<tr style='background-color:#bbdefb'><td>"+"Pressure"+"</td><td>"+list.main.pressure+" hPa</td></tr>");
-		tr.append("<tr><td>"+"Humidity"+"</td><td>"+list.main.humidity+" %</td></tr>");
-		tr.append("<tr style='background-color:#bbdefb'><td>"+"Min Temperature"+"</td><td>"+(list.main.temp_min-273.15).toFixed(2)+" °C</td></tr>");
-		tr.append("<tr><td>"+"Max Temperature"+"</td><td>"+(list.main.temp_max-273.15).toFixed(2)+" °C</td></tr>");
+		tr.append("<tr style='background-color:#bbdefb'><td><b>"+"Wind"+"</b></td><td>"+list.wind.speed+" m/sec</td></tr>");
+		tr.append("<tr><td><b>"+"Cloudiness"+"</b></td><td>"+list.clouds.all+" %</td></tr>");
+		tr.append("<tr style='background-color:#bbdefb'><td><b>"+"Pressure"+"</b></td><td>"+list.main.pressure+" hPa</td></tr>");
+		tr.append("<tr><td><b>"+"Humidity"+"</b></td><td>"+list.main.humidity+" %</td></tr>");
+		tr.append("<tr style='background-color:#bbdefb'><td><b>"+"Min Temperature"+"</b></td><td>"+(list.main.temp_min-273.15).toFixed(2)+" °C</td></tr>");
+		tr.append("<tr><td><b>"+"Max Temperature"+"</b></td><td>"+(list.main.temp_max-273.15).toFixed(2)+" °C</td></tr>");
 
 		tr.append("</tbody>")
 		tab.append(tr)
 		$('#weather-icon').width('10vh');		//change the size of the icon for the weather
 	}
 
+	function dateConvert(date){
+		var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+		var current_date = new Date(date);
+		month_value = current_date.getMonth();
+		day_value = current_date.getDate();
+		year_value = current_date.getFullYear();
+
+		return( months[month_value] + " " +day_value +", "+ year_value)
+	}
 		function asignTitle(city){	//assign a title for hourly data
 			var div1 = $('#title-daily');
 			div1.empty();
