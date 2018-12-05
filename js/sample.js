@@ -186,7 +186,9 @@ function selected_location(city,province){
 			                color: '#0d47a1'
 			            }
 			        },
-			        opposite: true
+			        opposite: true,
+			        min: 0,
+			        max: 10
 			    }],
 			    tooltip: {
 			        shared: true
@@ -281,7 +283,9 @@ function selected_location(city,province){
 			                color: '#0d47a1'
 			            }
 			        },
-			        opposite: true
+			        opposite: true,
+			        min: 0,
+			        max: 10
 			    }],
 			    tooltip: {
 			        shared: true
